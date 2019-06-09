@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+<body>
+    <script>  
+        // 1. 属性拷贝  (将对象的成员复制一份给需要继承的对象)
+
+        var obj = {  //父对象
+            name: 'lili',
+            age:2,
+            friends: ['huahua', 'manman'],
+            showName: function() {
+                console.log(this.name)
+            }
+        }
+
+        var newObj = {}; // 需要继承的子对象
+
+        for(var i in obj) {
+            newObj[i] = obj[i]
+        }
+
+        // console.log(obj)
+        // console.log(newObj)
+
+        //  2. 构造函数 继承 （使用call和apply借用其他构造函数的成员）
+        // 可以 给父构造函数传参，但获取不到父构造函数原型上的成员，不存在共享问题
+
+        function Person(name) { // 父构造函数
+            this.name = name;
+            this.friends = ['huahua', 'manman'];
+            this.showName = function() {
+                console.log(this.name)
+            }
+        }
+        Person.prototype.fun = function() {
+            console.log(123)
+        }
+
+        function Son(name) {
+            // 使用call借用父构造函数
+            //console.log(this) // Son
+            Person.call(this, name)
+        }
+        // 监测是否有 Person 的属性
+        var son = new Son('lili');
+        //son.showName();
+        //son.fun() 不能继承父构造函数原型
+        //console.log(son.name)
+
+
+        // 3.原型式继承 (用构造函数的原型对象实现继承)
+        // 但两个原型对象成员有共享问题，也不能继承父构造函数的实例对象的成员
+        function Parent(name) {
+            this.name = name;
+            this.showName = function() {
+                console.log(this.name)
+            }
+        }
+        Parent.prototype.showAge = function() {
+            console.log(this.age)
+        }
+        // 创建子构造函数
+        function Child(){
+
+        }
+        // 设置子构造函数的原型对象 继承
+        Child.prototype =Parent.prototype;
+
+        var child = new Child('lli');
+        
+        //console.log(child.prototype)
+
+
+        // 4.原型链继承 （将父类的实例作为子类的原型）
+        function Cat(name){
+            this.name = name;
+            this.sum = function(){
+                console.log(this.name)
+            }
+        }
+        Cat.prototype.age = 2;
+
+        function Per(){
+            this.name = 'ker';
+        }
+        Per.prototype = new Cat();
+
+        var per1 = new Per();
+        console.log(per1.age);
+        // instanceof 判断元素是否在另一个元素的原型链上；
+        // per1 继承了Cat的属性， 返回true
+        console.log(per1 instanceof Cat);
+
+
+        // 5.组合继承（原型链和构造函数 组合继承）
+        function SubType(name){
+            Person.call(this,name);
+        }
+        SubType.prototype = new Cat();
+        var sub = new SubType('gar');
+        console.log(sub.name); // gar
+        console.log(sub.age) // 2
+    </script>
+</body>
+</html>
